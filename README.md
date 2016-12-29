@@ -1,5 +1,7 @@
 # LLVM Practice
 
+LLVM version: 3.5 in MacOS/X
+
 ## Mac OS/X
 
 Check clang verion installed by Xcode.
