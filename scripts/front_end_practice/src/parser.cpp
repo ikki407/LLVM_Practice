@@ -13,9 +13,9 @@ Parser::Parser(std::string filename){
  * Do parsing
  * @return success: true fail: false
  */
-bool Parser::doParser(){
+bool Parser::doParse(){
     if (!Tokens){
-        fprint(stderr, "error ar lexer\n");
+        fprintf(stderr, "error ar lexer\n");
         return false;
     }else{
         return visitTranslationUnit();
@@ -97,7 +97,7 @@ PrototypeAST *Parser::visitFunctionDeclaration(){
         if (PrototypeTable.find(proto->getName()) != PrototypeTable.end() ||
                 (FunctionTable.find(proto->getName()) != FunctionTable.end() && 
                  FunctionTable[proto->getName()] != proto->getParamNum())){
-            fprint(stderr, "Function : %s is redefined", proto->getName().c_str());
+            fprintf(stderr, "Function : %s is redefined", proto->getName().c_str());
             SAFE_DELETE(proto);
             return NULL;
         }
@@ -123,8 +123,8 @@ FunctionAST *Parser::visitFunctionDefinition(){
         return NULL;
     }else if ((PrototypeTable.find(proto->getName()) != PrototypeTable.end() &&
                 PrototypeTable[proto->getName()] != proto->getParamNum()) ||
-            FunctionTable.find(proto->getName() != FunctionTable.end())){
-        fprint(stderr, "Function : %s is redefined", proto->getName().c_str());
+            FunctionTable.find(proto->getName()) != FunctionTable.end()){
+        fprintf(stderr, "Function : %s is redefined", proto->getName().c_str());
         SAFE_DELETE(proto);
         return NULL;
     }
@@ -377,7 +377,7 @@ BaseAST *Parser::visitJumpStatement(){
     BaseAST *expr;
 
     if (Tokens->getCurType() == TOK_RETURN){
-        Tokena->getNextToken();
+        Tokens->getNextToken();
         if (!(expr = visitAssignmentExpression())){
             Tokens->applyTokenIndex(bkup);
             return NULL;
@@ -411,7 +411,7 @@ BaseAST *Parser::visitAssignmentExpression(){
             lhs = new VariableAST(Tokens->getCurString());
             Tokens->getNextToken();
             BaseAST *rhs;
-            if (Tokens->getCurType() == TOK_SYMBOL && Tokens->getCurString == "="){
+            if (Tokens->getCurType() == TOK_SYMBOL && Tokens->getCurString() == "="){
                 Tokens->getNextToken();
                 if (rhs = visitAdditiveExpression(NULL)){
                     return new BinaryExprAST("=", lhs, rhs);
@@ -512,7 +512,7 @@ BaseAST *Parser::visitMultiplicativeExpression(BaseAST *lhs){
         }
 
     // /
-    }else if (Tokens->getCurType() == TOK_SYMBOL && Tokens->getCurString == "/"){
+    }else if (Tokens->getCurType() == TOK_SYMBOL && Tokens->getCurString() == "/"){
         Tokens->getNextToken();
         rhs = visitPostfixExpression();
         if (rhs){
@@ -543,7 +543,7 @@ BaseAST *Parser::visitPostfixExpression(){
         //is FUNCTION_IDENTIFIER
         int param_num;
         if (PrototypeTable.find(Tokens->getCurString()) != PrototypeTable.end()){
-            param_num = PrototypeTable[Tokens->getCurString();
+            param_num = PrototypeTable[Tokens->getCurString()];
         }else if (FunctionTable.find(Tokens->getCurString()) != FunctionTable.end()){
             param_num = FunctionTable[Tokens->getCurString()];
         }else{
@@ -566,7 +566,7 @@ BaseAST *Parser::visitPostfixExpression(){
         BaseAST *assign_expr = visitAssignmentExpression();
         if (assign_expr){
             args.push_back(assign_expr);
-            while (Tokens->getCurString() == TOK_SYMBOL && Tokens->getCurString() == ","){
+            while (Tokens->getCurType() == TOK_SYMBOL && Tokens->getCurString() == ","){
                 Tokens->getNextToken();
 
                 //IDENTIFIER
@@ -620,12 +620,12 @@ BaseAST *Parser::visitPrimaryExpression(){
     
     //integer
     }else if (Tokens->getCurType() == TOK_DIGIT){
-        int var = Tokens->getCurNumVal();
+        int val = Tokens->getCurNumVal();
         Tokens->getNextToken();
         return new NumberAST(val);
     
     //integer(-)
-    }else if (Tokens->getCurType() == TOK_SYMBOL && Toknes->getCurString() == "-"){
+    }else if (Tokens->getCurType() == TOK_SYMBOL && Tokens->getCurString() == "-"){
         Tokens->getNextToken();
         if (Tokens->getCurType() == TOK_DIGIT){
             int val = Tokens->getCurNumVal();

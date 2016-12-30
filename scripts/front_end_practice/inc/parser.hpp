@@ -31,7 +31,7 @@ typedef class Parser{
     public:
         Parser(std::string filename);
         ~Parser(){SAFE_DELETE(TU); SAFE_DELETE(Tokens);}
-        bool doParser();
+        bool doParse();
         TranslationUnitAST &getAST();
 
     private:
@@ -40,17 +40,17 @@ typedef class Parser{
          */
         bool visitTranslationUnit();
         bool visitExternalDeclaration(TranslationUnitAST *tunit);
-        PrototypeAST *visitFunctionDeclartion();
-        FunctionAST *vistFunctionDefinition();
+        PrototypeAST *visitFunctionDeclaration();
+        FunctionAST *visitFunctionDefinition();
         PrototypeAST *visitPrototype();
         FunctionStmtAST *visitFunctionStatement(PrototypeAST *proto);
         VariableDeclAST *visitVariableDeclaration();
-        BaseAST *vistStatement();
+        BaseAST *visitStatement();
         BaseAST *visitExpressionStatement();
         BaseAST *visitJumpStatement();
         BaseAST *visitAssignmentExpression();
         BaseAST *visitAdditiveExpression(BaseAST *lhs);
-        BaseAST *visitMultiplicationExpression(BaseAST *lhs);
+        BaseAST *visitMultiplicativeExpression(BaseAST *lhs);
         BaseAST *visitPostfixExpression();
         BaseAST *visitPrimaryExpression();
 

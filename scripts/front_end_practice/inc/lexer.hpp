@@ -2,7 +2,7 @@
 #define LEXER_HPP
 
 #include<cstdio>
-#include<cstddlib>
+#include<cstdlib>
 #include<fstream>
 #include<list>
 #include<string>
@@ -79,7 +79,7 @@ class TokenStream{
             return true;
         }
         Token getToken();
-        TokenType getCutType(){return Tokens[CurIndex]->getTokenType();}
+        TokenType getCurType(){return Tokens[CurIndex]->getTokenType();}
         std::string getCurString(){return Tokens[CurIndex]->getTokenString();}
         int getCurNumVal(){return Tokens[CurIndex]->getNumberValue();}
         bool printTokens();

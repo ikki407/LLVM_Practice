@@ -66,7 +66,7 @@ class TranslationUnitAST{
         TranslationUnitAST(){}
         ~TranslationUnitAST();
         bool addPrototype(PrototypeAST *proto);
-        bool addFunction(FunctionAST *func));
+        bool addFunction(FunctionAST *func);
         bool empty();
         PrototypeAST *getPrototype(int i){
             if (i < Prototypes.size()){
@@ -76,8 +76,8 @@ class TranslationUnitAST{
             }
         }
         FunctionAST *getFunction(int i){
-            if (i < prototypes.size()){
-                return Function.at(i);
+            if (i < Prototypes.size()){
+                return Functions.at(i);
             }else{
                 return NULL;
             }
@@ -127,6 +127,38 @@ class FunctionAST{
 };
 
 /**
+ * AST that represents function statements
+ */
+class FunctionStmtAST{
+    std::vector<VariableDeclAST*> VariableDecls;
+    std::vector<BaseAST*> StmtLists;
+
+    public:
+        FunctionStmtAST(){}
+        ~FunctionStmtAST();
+        bool addVariableDeclaration(VariableDeclAST *vdecl);
+        bool addStatement(BaseAST *stmt){
+            StmtLists.push_back(stmt);
+        }
+        VariableDeclAST *getVariableDecl(int i){
+            if (i < VariableDecls.size()){
+                return VariableDecls.at(i);
+            }else{
+                return NULL;
+            }
+        }
+        BaseAST *getStatement(int i){
+            if (i < StmtLists.size()){
+                return StmtLists.at(i);
+            }else{
+                return NULL;
+            }
+        }
+};
+
+
+
+/**
  * AST that represents declaration of variable
  */
 class VariableDeclAST: public BaseAST {
@@ -174,12 +206,12 @@ class BinaryExprAST : public BaseAST{
 /**
  * AST that represents ";"
  */
-class NullExprAST : BaseAST{
+class NullExprAST : public BaseAST{
     public:
         NullExprAST() : BaseAST(NullExprID){}
         static inline bool classof(NullExprAST const*){return true;}
-        static inline bool classof((BaseAST const* base){
-                return base->getValueID == NullExprID;        
+        static inline bool classof(BaseAST const* base){
+                return base->getValueID() == NullExprID;        
         }
 };
 
@@ -197,14 +229,14 @@ class CallExprAST : public BaseAST{
         std::string getCallee(){return Callee;}
         BaseAST *getArgs(int i){
             if (i < Args.size()){
-                return Args.at(i)
+                return Args.at(i);
             }else{
                 return NULL;
             }
         }
         static inline bool classof(CallExprAST const*){return true;}
         static inline bool classof(BaseAST const* base){
-            return base->getValueID == CallExprID;
+            return base->getValueID() == CallExprID;
         }
 };
 
@@ -250,7 +282,7 @@ class NumberAST : public BaseAST{
         int getNumberValue(){return Val;}
         static inline bool classof(NumberAST const*){return true;}
         static inline bool classof(BaseAST const* base){
-            return base->getValueID == NumberID;
+            return base->getValueID() == NumberID;
         }
 };
 

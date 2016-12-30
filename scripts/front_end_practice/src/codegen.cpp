@@ -118,7 +118,7 @@ llvm::Function *CodeGen::generatePrototype(PrototypeAST *proto, llvm::Module *mo
         if (func->arg_size() == proto->getParamNum() && func->empty()){
             return func;
         }else{
-            fprintf(stderr, "error::function %s if redefined", prpto->getName().c_str());
+            fprintf(stderr, "error::function %s if redefined", proto->getName().c_str());
             return NULL;
         }
     }
@@ -175,7 +175,7 @@ llvm::Value *CodeGen::generateFunctionStatement(FunctionStmtAST *func_stmt){
         stmt = func_stmt->getStatement(i);
         if (!stmt){
             break;
-        }else if (!llvm::isa<NULLExprAST>(stmt)){
+        }else if (!llvm::isa<NullExprAST>(stmt)){
             v = generateStatement(stmt);
         }
     }
@@ -185,7 +185,7 @@ llvm::Value *CodeGen::generateFunctionStatement(FunctionStmtAST *func_stmt){
 /**
  * Method of generating variable declaration
  */
-llvm::Value *CodeGen::generateStatement(VariableDeclAST *vdecl){
+llvm::Value *CodeGen::generateVariableDeclaration(VariableDeclAST *vdecl){
     //Create alloca
     llvm::AllocaInst *alloca = Builder->CreateAlloca(
             llvm::Type::getInt32Ty(llvm::getGlobalContext()),
@@ -196,7 +196,7 @@ llvm::Value *CodeGen::generateStatement(VariableDeclAST *vdecl){
     //If args alloca
     if (vdecl->getType() == VariableDeclAST::param){
         //store args
-        llvm::ValueSymbolTable *vs_table = CurFunc->getValueSymbolTable();
+        llvm::ValueSymbolTable &vs_table = CurFunc->getValueSymbolTable();
         Builder->CreateStore(vs_table.lookup(vdecl->getName().append("_arg")), alloca);
     }
     
@@ -295,7 +295,7 @@ llvm::Value *CodeGen::generateCallExpression(CallExprAST *call_expr){
     llvm::Value *arg_v;
     llvm::ValueSymbolTable &vs_table = CurFunc->getValueSymbolTable();
     for (int i=0; ; i++){
-        if (!(arg = call_expr-getArgs(i))){
+        if (!(arg = call_expr->getArgs(i))){
             break;
         }
 

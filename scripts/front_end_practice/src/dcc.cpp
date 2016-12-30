@@ -1,13 +1,16 @@
 #include "llvm/IR/IRPrintingPasses.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
-#include "llvm/IR/PassManager.h"
+#include "llvm/PassManager.h"
 #include "llvm/LinkAllPasses.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/FormattedStream.h"
 #include "llvm/Support/PrettyStackTrace.h"
 #include "llvm/Support/Signals.h"
 #include "llvm/Support/TargetSelect.h"
+#include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Bitcode/ReaderWriter.h"
 #include "lexer.hpp"
 #include "AST.hpp"
 #include "parser.hpp"
@@ -31,7 +34,7 @@ class OptionParser{
         void printHelp();
         std::string getInputFileName(){return InputFileName;}
         std::string getOutputFileName(){return OutputFileName;}
-        std::string getLinKFileName(){return LinkFileName;}
+        std::string getLinkFileName(){return LinkFileName;}
         bool getWithJit(){return WithJit;}
         bool parseOption();
 
@@ -42,7 +45,7 @@ class OptionParser{
  */
 void OptionParser::printHelp(){
     fprintf(stdout, "Compiler for DummyC...\n");
-    fprintf(stdout, "LLVM 3.5 for MacOS/X")
+    fprintf(stdout, "LLVM 3.5 for MacOS/X");
 }
 
 /**
@@ -92,7 +95,7 @@ bool OptionParser::parseOption(){
 int main(int argc, char **argv){
     llvm::InitializeNativeTarget();
     llvm::sys::PrintStackTraceOnErrorSignal();
-    llvm::PrettyStackTraceProgram X(argc, argv)
+    llvm::PrettyStackTraceProgram X(argc, argv);
 
     llvm::EnableDebugBuffering = true;
 
@@ -120,7 +123,7 @@ int main(int argc, char **argv){
         exit(1);
     }
 
-    CodeGene *codegen = new CodeGen();
+    CodeGen *codegen = new CodeGen();
     if (!codegen->doCodeGen(tunit, opt.getInputFileName(), opt.getLinkFileName(), opt.getWithJit())){
         fprintf(stderr, "Error at codegen\n");
         SAFE_DELETE(parser);
@@ -143,10 +146,10 @@ int main(int argc, char **argv){
 
     //Output
     std::string  error;
-    llvm::raw_fd_ostream raw_stream(opt.getOutputFileName().c_str(), error);
-    pm.add(createPrintModulePass(&raw_stream));
+    llvm::raw_fd_ostream os(opt.getOutputFileName().c_str(), error, llvm::sys::fs::OpenFlags::F_None);
+    pm.add(llvm::createPrintModulePass(os));
     pm.run(mod);
-    raw_stream.close();
+    os.close();
 
     //delete
     SAFE_DELETE(parser);

@@ -114,7 +114,7 @@ TokenStream *LexicalAnalysis(std::string input_filename){
 
                 //解析不能字句
                 }else{
-                    fprint(stdout, "unclear token : %c", next_char);
+                    fprintf(stdout, "unclear token : %c", next_char);
                     SAFE_DELETE(tokens);
                     return NULL;
                 }
@@ -197,9 +197,9 @@ bool TokenStream::ungetToken(int times){
 bool TokenStream::printTokens(){
     std::vector<Token*>::iterator titer = Tokens.begin();
     while(titer != Tokens.end()){
-        fprint(stdout, "%d:", (*titer)->getTokenType());
+        fprintf(stdout, "%d:", (*titer)->getTokenType());
         if((*titer)->getTokenType() != TOK_EOF)
-            fprint(stdout, "%s\n", (*titer)->getTokenString().c_str());
+            fprintf(stdout, "%s\n", (*titer)->getTokenString().c_str());
         ++titer;
     }
     return true;

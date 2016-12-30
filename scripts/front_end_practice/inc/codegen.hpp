@@ -19,6 +19,7 @@
 #include <llvm/IRReader/IRReader.h>
 #include <llvm/IR/MDBuilder.h>
 #include <llvm/IR/ValueSymbolTable.h>
+#include <llvm/Support/SourceMgr.h>
 #include "APP.hpp"
 #include "AST.hpp"
 
@@ -39,14 +40,14 @@ class CodeGen{
         llvm::Module &getModule();
 
     private:
-        bool generateTranslationUnit(TranslationUnitAST &tunit, std:string name);
+        bool generateTranslationUnit(TranslationUnitAST &tunit, std::string name);
         llvm::Function *generateFunctionDefinition(FunctionAST *func, llvm::Module *mod);
         llvm::Function *generatePrototype(PrototypeAST *proto, llvm::Module *mod);
         llvm::Value *generateFunctionStatement(FunctionStmtAST *func_stmt);
         llvm::Value *generateVariableDeclaration(VariableDeclAST *vdecl);
         llvm::Value *generateStatement(BaseAST *stmt);
         llvm::Value *generateBinaryExpression(BinaryExprAST *bin_expr);
-        llvm::Value *generateCallExpression(CallExpr *call_expr);
+        llvm::Value *generateCallExpression(CallExprAST *call_expr);
         llvm::Value *generateJumpStatement(JumpStmtAST *jump_stmt);
         llvm::Value *generateVariable(VariableAST *var);
         llvm::Value *generateNumber(int value);
